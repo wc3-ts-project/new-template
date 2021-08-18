@@ -1,6 +1,6 @@
 ﻿STRING 1
 {
-test
+Test w3ts-lib
 }
 
 STRING 2
@@ -10,20 +10,30 @@ STRING 2
 
 STRING 3
 {
-Описание отсутствует
+Карта теста библиотеки ООП на TypeScript.
 }
 
 STRING 4
 {
-Неизвестно
+RightCoin
 }
 
 STRING 5
 {
-Игрок 1
+w3ts-lib
 }
 
 STRING 6
+{
+Карта теста библиотеки ООП на TypeScript.
+}
+
+STRING 7
+{
+Игрок 1
+}
+
+STRING 8
 {
 Клан 1
 }

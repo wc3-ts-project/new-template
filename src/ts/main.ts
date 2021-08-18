@@ -3,3 +3,8 @@
 // Another alternative is to put these into the `types` array in `tsconfig.json`
 /// <reference types="lua-types/5.3"/>
 /// <reference types="ceres-decl/ceres"/>
+
+import { init } from "./package"
+import { setTimeout } from "./timer"
+
+setTimeout(0., init)

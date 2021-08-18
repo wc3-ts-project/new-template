@@ -1,5 +1,5 @@
-gg_trg_unit = nil
-gg_unit_Hblm_0001 = nil
+gg_trg_allocator = nil
+gg_unit_Hblm_0000 = nil
 function InitGlobals()
 end
 
@@ -9,7 +9,7 @@ function CreateUnitsForPlayer0()
     local unitID
     local t
     local life
-    gg_unit_Hblm_0001 = CreateUnit(p, FourCC("Hblm"), -73.5, -181.8, 206.395)
+    gg_unit_Hblm_0000 = CreateUnit(p, FourCC("Hblm"), 9.5, -348.0, 249.661)
 end
 
 function CreatePlayerBuildings()
@@ -24,18 +24,17 @@ function CreateAllUnits()
     CreatePlayerUnits()
 end
 
---
-function Trig_unit_Actions()
-    ShowUnitShow(gg_unit_Hblm_0001)
+function Trig_allocator_Actions()
+    ShowUnitHide(gg_unit_Hblm_0000)
 end
 
-function InitTrig_unit()
-    gg_trg_unit = CreateTrigger()
-    TriggerAddAction(gg_trg_unit, Trig_unit_Actions)
+function InitTrig_allocator()
+    gg_trg_allocator = CreateTrigger()
+    TriggerAddAction(gg_trg_allocator, Trig_allocator_Actions)
 end
 
 function InitCustomTriggers()
-    InitTrig_unit()
+    InitTrig_allocator()
 end
 
 function InitCustomPlayerSlots()
@@ -69,7 +68,7 @@ function config()
     SetPlayers(1)
     SetTeams(1)
     SetGamePlacement(MAP_PLACEMENT_USE_MAP_SETTINGS)
-    DefineStartLocation(0, -64.0, -192.0)
+    DefineStartLocation(0, 0.0, -384.0)
     InitCustomPlayerSlots()
     SetPlayerSlotAvailable(Player(0), MAP_CONTROL_USER)
     InitGenericPlayerSlots()
