@@ -1,6 +1,6 @@
 ﻿STRING 1
 {
-Test w3ts-lib
+Another Map
 }
 
 STRING 2
@@ -10,12 +10,12 @@ STRING 2
 
 STRING 3
 {
-Карта теста библиотеки ООП на TypeScript.
+New map.
 }
 
 STRING 4
 {
-RightCoin
+Unknown
 }
 
 STRING 5
