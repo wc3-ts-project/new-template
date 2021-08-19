@@ -4,8 +4,10 @@ export const setTimeout = (time: real, callback: code, isDestroy = true) => {
     const timer = CreateTimer()
     timerStart(timer, time, false, () => {
         callback()
-        PauseTimer(timer)
-        DestroyTimer(timer)
+        if (isDestroy) {
+            PauseTimer(timer)
+            DestroyTimer(timer)
+        }
     })
     return timer
 }
