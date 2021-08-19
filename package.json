@@ -46,7 +46,7 @@
   "dependencies": {
     "war3-types": "^1.0.4"
   },
-  "description": "This repository contains a sample configuration for using Ceres with TypeScript.",
+  "description": "This repository has a configuration template for using Ceres with TypeScript.",
   "main": ".eslintrc.js",
   "repository": {
     "type": "git",

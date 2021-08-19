@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "target": "es6",
+        "removeComments": true,
         "lib": ["es6"],
         "strict": true,
         "types": [
@@ -21,17 +22,16 @@
             "war3-types/special/w3ts",
             "./src/war3map"
         ],
-        // "noImplicitAny": true,
         "noImplicitThis": true,
         "noImplicitReturns": true,
         "alwaysStrict": true,
         "strictNullChecks": true,
         "moduleResolution": "node",
         "outDir": "target/compiled",
-        "rootDir": "./src/ts",
+        "rootDir": "./",
         "declaration": false
     },
-    "include": ["src/ts"],
+    "include": ["./src", "main.ts"],
     "tstl": {
         "luaTarget": "5.3",
         "noHeader": true,
