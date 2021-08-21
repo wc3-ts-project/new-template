@@ -20,7 +20,8 @@
             "war3-types/core/commonai",
             "war3-types/core/polyfill",
             "war3-types/special/w3ts",
-            "./src/war3map"
+            "./src/war3map",
+            "./src/decl"
         ],
         "noImplicitThis": true,
         "noImplicitReturns": true,
@@ -29,6 +30,10 @@
         "moduleResolution": "node",
         "outDir": "target/compiled",
         "rootDir": "./",
+        "baseUrl": "node_modules",
+        "paths": {
+            "*": ["./*/src/index", "./*/lib/index", "./*/index", "./*"]
+        },
         "declaration": false
     },
     "include": ["./src", "main.ts"],

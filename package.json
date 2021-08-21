@@ -1,6 +1,6 @@
 {
     "name": "@write-coin/ceres-ts-template",
-    "version": "1.0.1",
+    "version": "1.0.5",
     "scripts": {
         "watch": "ceres-tstl --watch",
         "dev": "npm-watch",

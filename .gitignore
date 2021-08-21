@@ -8,7 +8,9 @@
 !package.json
 !tsconfig.json
 !src
+!main.ts
 !maps
 !README.md
 !config.json
 !scripts
+!index.ts
