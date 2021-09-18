@@ -1,4 +1,5 @@
 gg_trg_allocator = nil
+gg_trg_test = nil
 gg_unit_Hblm_0000 = nil
 function InitGlobals()
 end
