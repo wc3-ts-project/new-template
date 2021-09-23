@@ -1,1 +1,5 @@
 mkcd modules
+
+req wc3-ts-project utils
+req wc3-ts-project ident-wrap
+req wc3-ts-project obj-edit
