@@ -37,7 +37,7 @@
         },
         "declaration": false
     },
-    "include": ["./src", "main.ts"],
+    "include": ["./src", "./modules", "main.ts"],
     "tstl": {
         "luaTarget": "5.3",
         "noHeader": true,

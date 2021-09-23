@@ -1,6 +1,6 @@
 {
     "name": "ceres-ts-template",
-    "version": "1.0.6",
+    "version": "1.0.0",
     "scripts": {
         "watch": "ceres-tstl --watch",
         "dev": "npm-watch",
@@ -50,11 +50,11 @@
     "main": ".eslintrc.js",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/W3TS-Project/ceres-ts-template.git"
+        "url": "git+https://github.com/wc3-ts-project/ceres-ts-template.git"
     },
     "author": "WriteCoin",
     "bugs": {
-        "url": "https://github.com/W3TS-Project/ceres-ts-template/issues"
+        "url": "https://github.com/wc3-ts-project/ceres-ts-template/issues"
     },
-    "homepage": "https://github.com/W3TS-Project/ceres-ts-template#readme"
+    "homepage": "https://github.com/wc3-ts-project/ceres-ts-template#readme"
 }
