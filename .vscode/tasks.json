@@ -7,7 +7,7 @@
             "type": "process",
             "label": "Ceres - Run",
             "command": "ceres",
-            "args": ["run", "--", "--map", "mpq.w3x", "--output", "mpq"],
+            "args": ["run", "--", "--map", "map.w3x", "--output", "mpq"],
             "options": {
                 "cwd": "${workspaceRoot}"
             },
@@ -18,7 +18,7 @@
             "type": "process",
             "label": "Ceres - Build",
             "command": "ceres",
-            "args": ["build", "--", "--map", "mpq.w3x", "--output", "mpq"],
+            "args": ["build", "--", "--map", "map.w3x", "--output", "mpq"],
             "options": {
                 "cwd": "${workspaceRoot}"
             },
