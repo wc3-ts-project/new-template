@@ -16,14 +16,14 @@
             "lua-types/special/5.3",
             "lua-types/5.3",
             "ceres-decl/ceres",
-            "war3-types/core/compat",
-            "war3-types/core/common",
-            "war3-types/core/blizzard",
-            "war3-types/core/commonai",
-            "war3-types/core/polyfill",
-            "war3-types/special/w3ts",
-            "./src/war3map",
-            "./src/decl"
+            // "war3-types/core/compat",
+            // "war3-types/core/common",
+            // "war3-types/core/blizzard",
+            // "war3-types/core/commonai",
+            // "war3-types/core/polyfill",
+            // "war3-types/special/w3ts",
+            "./src/ts/war3map",
+            "./src/ts/decl"
         ],
         "allowJs": true,
         "alwaysStrict": true,
@@ -31,17 +31,22 @@
         "moduleResolution": "node",
         "outDir": "target/compiled",
         "rootDir": "./",
+        // "rootDir": "./src/ts",
         "baseUrl": "node_modules",
-        "paths": {
-            "*": ["./*/src/index", "./*/lib/index", "./*/index", "./*"]
-        },
         "declaration": false
     },
-    "include": ["./src", "main.ts"],
+    "include": [
+        "./src/ts",
+        "main.ts",
+        "node_modules/cerrie"
+        // "node_modules/new_package",
+        // "node_modules/sample-warcraft-package/src/ts"
+    ],
+    // "include": ["src/ts"],
     "tstl": {
         "luaTarget": "5.3",
         "noHeader": true,
-        "luaLibImport": "require",
+        "luaLibImport": "always",
         "noImplicitSelf": true
     }
 }
