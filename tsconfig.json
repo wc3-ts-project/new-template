@@ -30,19 +30,19 @@
         "checkJs": false,
         "moduleResolution": "node",
         "outDir": "target/compiled",
-        "rootDir": "./",
-        // "rootDir": "./src/ts",
-        "baseUrl": "node_modules",
+        // "rootDir": "./",
+        "rootDir": "./src/ts",
+        // "baseUrl": "node_modules",
         "declaration": false
     },
-    "include": [
-        "./src/ts",
-        "main.ts",
-        "node_modules/cerrie"
-        // "node_modules/new_package",
-        // "node_modules/sample-warcraft-package/src/ts"
-    ],
-    // "include": ["src/ts"],
+    // "include": [
+    //     "./src/ts",
+    //     "main.ts",
+    //     "node_modules/cerrie"
+    //     // "node_modules/new_package",
+    //     // "node_modules/sample-warcraft-package/src/ts"
+    // ],
+    "include": ["src/ts"],
     "tstl": {
         "luaTarget": "5.3",
         "noHeader": true,

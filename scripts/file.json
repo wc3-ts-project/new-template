@@ -1,0 +1,53 @@
+{
+    "type": "Chunk",
+    "body": [
+        {
+            "type": "AssignmentStatement",
+            "variables": [
+                {
+                    "type": "MemberExpression",
+                    "indexer": ".",
+                    "identifier": { "type": "Identifier", "name": "srcDirectories" },
+                    "base": {
+                        "type": "MemberExpression",
+                        "indexer": ".",
+                        "identifier": { "type": "Identifier", "name": "layout" },
+                        "base": { "type": "Identifier", "name": "ceres" }
+                    }
+                }
+            ],
+            "init": [
+                {
+                    "type": "TableConstructorExpression",
+                    "fields": [
+                        {
+                            "type": "TableValue",
+                            "value": {
+                                "type": "StringLiteral",
+                                "value": null,
+                                "raw": "\"src/lua\""
+                            }
+                        },
+                        {
+                            "type": "TableValue",
+                            "value": {
+                                "type": "StringLiteral",
+                                "value": null,
+                                "raw": "\"target/compiled\""
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "CallStatement",
+            "expression": {
+                "type": "StringCallExpression",
+                "base": { "type": "Identifier", "name": "require" },
+                "argument": { "type": "StringLiteral", "value": null, "raw": "\"runconfig\"" }
+            }
+        }
+    ],
+    "comments": []
+}
