@@ -1,9 +1,9 @@
-// import "cerrie/init"
-// import "cerrie/livereload"
+import "cerrie/init"
+import "cerrie/livereload"
 // import { a } from "new_package/index"
 
 // print(a) 
-print("Hello TypeScriptToLua! ")
+print("Hello TypeScriptToLua!")
 
 // const timer = new Timer()
 // timer.start(1., false, () => {

@@ -1,9 +1,20 @@
-const util = require("util")
-const copyfiles = util.promisify(require("copyfiles"))
-const files = require("files")
-const isAsyncFn = require("is-async-function")
 const tsconfig = require("tsconfig")
 const Path = require("path")
+const fs = require("fs")
+
+class TsconfigFileNotFound extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "TsconfigFileNotFound"
+    }
+}
+
+class NpmPackageFileNotFound extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "NpmPackageFileNotFound"
+    }
+}
 
 class ModuleInformant {
     TSCONFIG_NAME = "tsconfig.json"
@@ -30,11 +41,19 @@ class ModuleInformant {
     }
 
     getTsconfig(path = this.DEFAULT_START_PATH) {
-        return tsconfig.readFileSync(this.getPath(path, this.TSCONFIG_NAME))
+        const pathToTsconfig = this.getPath(path, this.TSCONFIG_NAME)
+        if (!fs.existsSync(pathToTsconfig)) {
+            throw new TsconfigFileNotFound(`Файл ${this.TSCONFIG_NAME} не найден`)
+        }
+        return tsconfig.readFileSync(pathToTsconfig)
     }
 
     getPackageNpm(path = this.DEFAULT_START_PATH) {
-        return tsconfig.readFileSync(this.getPath(path, this.PACKAGE_NPM_NAME))
+        const pathToPackage = this.getPath(path, this.PACKAGE_NPM_NAME)
+        if (!fs.existsSync(pathToPackage)) {
+            throw new NpmPackageFileNotFound(`Файл ${this.PACKAGE_NPM_NAME} не найден`)
+        }
+        return tsconfig.readFileSync(pathToPackage)
     }
 
     getModulesList(path = this.DEFAULT_START_PATH) {
@@ -58,54 +77,6 @@ class ModuleInformant {
 
     getOutdir() {
         return this.tsconfig.compilerOptions.outDir || this.DEFAULT_OUT_DIR
-    }
-
-    getInputLuaFiles() {
-
-    }
-
-    async recursiveLs(path, changeFiles) {
-        let fsx = await files.ls(path)
-        const result = { files: [] }
-        for (const f of fsx) {
-            if (await files.stat(f).isDirectory()) {
-                result[f] = await this.recursiveLs(f, changeFiles)
-            } else {
-                result.files.push(f)
-            }
-        }
-        if (typeof changeFiles === "function") {
-            const isAsync = isAsyncFn(changeFiles)
-            result.files = isAsync ? await changeFiles(fsx) : changeFiles(fsx)
-        }
-        return result
-    }
-
-    async getLuaScripts(filesFn) {
-        const luaScripts = {}
-        for (const module of this.modulesList) {
-            luaScripts[module] = await this.recursiveLs(module, async fsx => {
-                let luaFiles = fsx.filter(file => /\.lua$/.test(file))
-                if (typeof filesFn === "function") {
-                    luaFiles = isAsyncFn(filesFn)
-                        ? await filesFn(luaFiles, module)
-                        : filesFn(luaFiles, module)
-                }
-                return luaFiles
-            })
-        }
-        return luaScripts
-    }
-
-    async copy() {
-        let inputFiles = []
-        await this.getLuaScripts(async (luaFiles, module) => {
-            module = module.replace("/", "\\")
-            luaFiles = luaFiles.map(file => file.substr(file.indexOf(module), file.length))
-            inputFiles = [...inputFiles, ...luaFiles]
-            return luaFiles
-        })
-        await copyfiles([...inputFiles, this.outDir])
     }
 
     async test() {
@@ -146,4 +117,8 @@ class ModuleInformant {
     }
 }
 
-module.exports = ModuleInformant
+// (async () => {
+//     await test()
+// })()
+
+module.exports = { ModuleInformant, TsconfigFileNotFound, NpmPackageFileNotFound }

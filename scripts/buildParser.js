@@ -2,19 +2,49 @@ const fs = require("fs")
 const Path = require("path")
 const luaparse = require("luaparse")
 
+class BuildFileNotFound extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "BuildFileNotFound"
+    }
+}
+
 class BuildParser {
     BUILD_NAME = "build.lua"
     SRC_DIRECTORIES_TABLE_NAME = "ceres.layout.srcDirectories"
 
     constructor(path = "./") {
-        const code = fs.readFileSync(Path.join(path, this.BUILD_NAME), "utf-8")
+        const pathToBuild =
+            Path.basename(path) === this.BUILD_NAME ? path : Path.join(path, this.BUILD_NAME)
+        if (!fs.existsSync(pathToBuild)) {
+            throw new BuildFileNotFound("Файл build.lua не найден")
+        }
+        const code = fs.readFileSync(pathToBuild, "utf-8")
         this.aboutCode = luaparse.parse(code)
         this.path = path
     }
 
     getList() {
-        const codeEl = this.getTableCodeElementIndex()
-        console.log(codeEl)
+        const codeElIndex = this.getTableCodeElementIndex()
+        const codeEl = this.aboutCode.body[codeElIndex]
+        if (!codeEl.init || codeEl.init[0].type !== "TableConstructorExpression") {
+            return []
+        }
+        const fields = codeEl.init[0].fields
+        const values = []
+        for (const field of fields) {
+            if (
+                field.type !== "TableValue" ||
+                !field.value ||
+                field.value.type !== "StringLiteral" ||
+                typeof field.value.raw !== "string"
+            ) {
+                continue
+            }
+            const raw = field.value.raw
+            values.push(raw.substr(1, raw.length - 2))
+        }
+        return values
     }
 
     getTableCodeElementIndex() {
@@ -48,14 +78,22 @@ class BuildParser {
     }
 
     test() {
-        // console.log(this.aboutCode)
-        this.getList()
+        const list = this.getList()
+        console.log(list)
     }
 }
 
-;(() => {
-    const buildParser = new BuildParser()
-    buildParser.test()
-})()
+// ;(() => {
+//     try {
+//         const buildParser = new BuildParser(__dirname)
+//         buildParser.test()
+//     } catch (e) {
+//         if (e instanceof BuildFileNotFound) {
+//             console.log(e.name)
+//             return
+//         }
+//         console.error(e)
+//     }
+// })()
 
-module.exports = BuildParser
+module.exports = {BuildParser, BuildFileNotFound}
