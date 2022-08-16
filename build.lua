@@ -1,3 +1,3 @@
-ceres.layout.srcDirectories = {"src/lua", "target/compiled", "node_modules/cerrie"}
+ceres.layout.srcDirectories = {"src/lua", "target/compiled"}
 
 require "runconfig"

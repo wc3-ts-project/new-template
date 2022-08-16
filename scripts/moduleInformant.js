@@ -62,17 +62,31 @@ class ModuleInformant {
         if (!dependencies || Object.keys(dependencies).length === 0) {
             return []
         }
+        const allPkgs = new Set()
         const filtered = Object.keys(dependencies)
             .filter(pkgName => !this.excludedModules.includes(pkgName))
-            .map(pkgName => Path.join(this.MODULES_DIR, pkgName))
-        const nestedPkgs = []
+            .map(pkgName => {
+                const path = Path.join(this.MODULES_DIR, pkgName)
+                allPkgs.add(path)
+                return path
+            })
+        // console.log(filtered)
+        // const nestedPkgs = []
         for (const pkgName of filtered) {
-            const pkgs = this.getModulesList(pkgName).filter(pkgName => !filtered.includes(pkgName))
+            const pkgs = this.getModulesList(pkgName)
+            // const pkgs = this.getModulesList(pkgName).filter(pkgName => {
+            //     console.log(pkgName)
+            //     console.log(!filtered.includes(pkgName))
+            //     console.log()
+            //     return !filtered.includes(pkgName)
+            // })
             for (const pkg of pkgs) {
-                nestedPkgs.push(pkg)
+                // nestedPkgs.push(pkg)
+                allPkgs.add(pkg)
             }
         }
-        return [...filtered, ...nestedPkgs]
+        // return [...filtered, ...nestedPkgs]
+        return Array.from(allPkgs)
     }
 
     getOutdir() {
