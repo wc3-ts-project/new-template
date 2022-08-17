@@ -54,7 +54,8 @@
         "cerrie": "^1.0.4",
         "false": "^0.0.4",
         "true": "^0.0.4",
-        "war3-types": "1.0.4"
+        "war3-types": "1.0.4",
+        "new_package": "file:../new_package"
     },
     "description": "This repository has a configuration template for using Ceres with TypeScript.",
     "main": ".eslintrc.js",

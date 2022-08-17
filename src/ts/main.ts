@@ -1,8 +1,8 @@
 import "cerrie/init"
 import "cerrie/livereload"
-// import { a } from "new_package/index"
+import { a } from "new_package/index"
 
-// print(a) 
+print(a) 
 print("Hello TypeScriptToLua!")
 
 // const timer = new Timer()

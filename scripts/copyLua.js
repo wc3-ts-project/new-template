@@ -7,16 +7,19 @@ const Path = require("path")
 const fs = require("fs")
 const { BuildParser, BuildFileNotFound } = require("./buildParser")
 const { ModuleInformant, TsconfigFileNotFound } = require("./moduleInformant")
+const { execSync } = require("child_process")
 
 class CopyLua {
     DEFAULT_INPUT_LUA_DIRS = ["./"]
     DEFAULT_PATH = process.cwd()
     moduleInformant = new ModuleInformant(this.DEFAULT_PATH)
+    LUALIB_BUNDLE_NAME = "lualib_bundle.lua"
 
     getInputLuaDirs(path = this.DEFAULT_PATH) {
         let buildNotFound = false
         let tsconfigNotFound = false
         let list = []
+        let outDir
         try {
             const buildParser = new BuildParser(path)
             list = buildParser.getList()
@@ -35,6 +38,7 @@ class CopyLua {
             if (!outDirExists) {
                 list.push(moduleInformant.outDir)
             }
+            outDir = moduleInformant.outDir
         } catch (e) {
             if (e instanceof TsconfigFileNotFound) {
                 tsconfigNotFound = true
@@ -49,7 +53,7 @@ class CopyLua {
             const index = list.indexOf(this.moduleInformant.MODULES_DIR)
             list.splice(index, 1)
         }
-        return list
+        return [list, outDir]
     }
 
     async recursiveLs(path, changeFiles) {
@@ -80,24 +84,29 @@ class CopyLua {
         console.log("Получение lua скриптов")
         const luaScripts = {}
         for (const module of this.moduleInformant.modulesList) {
-            const luaDirs = this.getInputLuaDirs(module)
+            const [luaDirs, luaOutDir] = this.getInputLuaDirs(module)
             // console.log("Папки модуля", module, ":", luaDirs)
             for (const luaDir of luaDirs) {
                 const luaScriptsKey = Path.join(module, luaDir)
                 luaScripts[luaScriptsKey] = await this.recursiveLs(luaScriptsKey, async fsx => {
                     const predicate = file => {
-                        const isLua = /\.lua$/.test(file)
-                        let notModules = !/node_modules/.test(file)
-                        if (Path.resolve(luaDir) === Path.resolve(this.moduleInformant.outDir)) {
-                            return isLua && notModules
+                        const isLua = Path.parse(file).ext === ".lua"
+                        const notModules = Path.basename(file) !== this.moduleInformant.MODULES_DIR
+                        const notBundle = Path.basename(file) !== this.LUALIB_BUNDLE_NAME
+                        if (
+                            luaDirs.find(
+                                dir => Path.resolve(dir) === Path.resolve(Path.dirname(file))
+                            )
+                        ) {
+                            return isLua && notBundle && notModules
                         }
-                        return isLua
+                        return isLua && notBundle
                     }
                     let luaFiles = fsx.filter(predicate)
                     if (typeof filesFn === "function") {
                         luaFiles = isAsyncFn(filesFn)
-                            ? await filesFn(luaFiles, luaScriptsKey)
-                            : filesFn(luaFiles, luaScriptsKey)
+                            ? await filesFn(luaFiles, luaScriptsKey, module, [luaDir, luaOutDir])
+                            : filesFn(luaFiles, luaScriptsKey, module, [luaDir, luaOutDir])
                     }
                     return luaFiles
                 })
@@ -179,27 +188,68 @@ class CopyLua {
         }
     }
 
+    moveCopiedFiles(luaScripts) {
+        console.log("Перемещение скриптов")
+        for (const [moduleOutDir, _] of Object.entries(luaScripts)) {
+            const inputDir = Path.join(this.moduleInformant.outDir, moduleOutDir)
+
+            if (!fs.existsSync(inputDir)) {
+                continue
+            }
+
+            const outputDir = Path.join(
+                this.moduleInformant.outDir,
+                this.moduleInformant.modulesList.find(module => moduleOutDir.includes(module, 0))
+            )
+            if (Path.resolve(inputDir) === Path.resolve(outputDir)) {
+                continue
+            }
+            let input = inputDir
+            let output = outputDir
+            input = input.replaceAll("\\", "/")
+            output = output.replaceAll("\\", "/")
+            input = `${input}/*`
+            // console.log("inputDir", input)
+            // console.log("outputDir", output)
+            execSync(`mv ${input} ${output}`)
+        }
+    }
+
     async copy() {
         let inputFiles = []
         const luaFilesCopied = {}
         // const start = new Date().getTime()
-        const luaScripts = await this.getLuaScripts(async (luaFiles, module) => {
-            module = module.replace("/", "\\")
-            luaFilesCopied[module] ??= []
-            luaFiles = luaFiles.map(file => {
-                const path = file.substr(file.indexOf(module), file.length)
-                const newLuaFile = Path.join(this.moduleInformant.outDir, path)
-                if (!luaFilesCopied[module].includes(newLuaFile)) {
-                    luaFilesCopied[module].push(newLuaFile)
-                }
-                return path
-            })
-            // console.log(luaFiles)
-            inputFiles = [...inputFiles, ...luaFiles]
-            return luaFiles
-        })
+        const luaScripts = await this.getLuaScripts(
+            async (luaFiles, luaScriptsKey, module, [luaDir, luaOutDir]) => {
+                luaScriptsKey = luaScriptsKey.replace("/", "\\")
+                luaFilesCopied[luaScriptsKey] ??= []
+                luaFiles = luaFiles.map(file => {
+                    const path = file.substr(file.indexOf(luaScriptsKey), file.length)
+                    let newLuaFile = Path.join(this.moduleInformant.outDir, path)
+                    if (luaDir === luaOutDir && luaDir !== "./" && luaDir !== ".\\") {
+                        newLuaFile = newLuaFile.replace(
+                            luaScriptsKey,
+                            // Path.join(this.moduleInformant.MODULES_DIR, module)
+                            module
+                        )
+                    }
+                    if (!luaFilesCopied[luaScriptsKey].includes(newLuaFile)) {
+                        luaFilesCopied[luaScriptsKey].push(newLuaFile)
+                    }
+                    return path
+                })
+                // console.log(luaFiles)
+                inputFiles = [...inputFiles, ...luaFiles]
+                return luaFiles
+            }
+        )
+        // console.log(inputFiles)
+        console.log("Копирование lua скриптов")
         await copyfiles([...inputFiles, this.moduleInformant.outDir])
+        this.moveCopiedFiles(luaScripts)
+
         // console.log(Object.keys(luaScripts))
+        // console.log(Object.keys(luaFilesCopied))
         // console.log(Object.values(luaFilesCopied))
         // console.log(Object.keys(luaScripts) === Object.keys(luaFilesCopied))
         // console.log(luaScripts)
