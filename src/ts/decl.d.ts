@@ -8,4 +8,5 @@ declare class Timer {
     pause(): this
     resume(): this
     start(timeout: number, periodic: boolean, handlerFunc: () => void): this
+    static getExpired(): Timer
 }

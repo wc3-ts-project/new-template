@@ -24,6 +24,7 @@ class ModuleInformant {
     DEFAULT_START_PATH = "./"
     DEFAULT_EXCLUDED_MODULES = []
     DEFAULT_OUT_DIR = "./"
+    DEFAULT_ROOT_DIR = './'
 
     constructor(
         pathToPackage = this.DEFAULT_START_PATH,
@@ -34,6 +35,7 @@ class ModuleInformant {
         this.tsconfig = this.getTsconfig(pathToPackage)
         this.modulesList = this.getModulesList(pathToPackage)
         this.outDir = this.getOutdir()
+        this.rootDir = this.getRootDir()
     }
 
     getPath(path, name) {
@@ -91,6 +93,10 @@ class ModuleInformant {
 
     getOutdir() {
         return this.tsconfig.compilerOptions.outDir || this.DEFAULT_OUT_DIR
+    }
+
+    getRootDir() {
+        return this.tsconfig.compilerOptions.rootDir || this.DEFAULT_ROOT_DIR
     }
 
     async test() {
