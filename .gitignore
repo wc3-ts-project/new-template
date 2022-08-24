@@ -9,10 +9,12 @@
 !tsconfig.json
 !src
 !main.ts
+!main.d.ts
 !install
 !maps
 !README.md
 !config.json
 !scripts
 !index.ts
+!webpack.config.js
 scripts/tests

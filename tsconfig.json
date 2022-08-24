@@ -22,6 +22,9 @@
             // "war3-types/core/commonai",
             // "war3-types/core/polyfill",
             // "war3-types/special/w3ts",
+            "./scripts/decl/api_scope_form",
+            // "./scripts/decl/api_object_form",
+            "./scripts/decl/handle",
             "./src/ts/war3map",
             "./src/ts/decl"
         ],
@@ -42,6 +45,7 @@
     //     // "node_modules/new_package",
     //     // "node_modules/sample-warcraft-package/src/ts"
     // ],
+    // "include": ["main.ts", "main.d.ts"],
     "include": ["src/ts", "main.ts"],
     // "include": ["src/ts"],
     "tstl": {

@@ -1,7 +1,16 @@
 gg_trg_allocator = nil
 gg_trg_test = nil
 gg_unit_Hblm_0000 = nil
+gg_trg_test2 = nil
 function InitGlobals()
+end
+
+function CreateAllItems()
+    local itemID
+    CreateItem(FourCC("dkfw"), -634.4, -191.3)
+    CreateItem(FourCC("k3m1"), 113.6, -3.3)
+    CreateItem(FourCC("mgtk"), -496.8, 285.8)
+    CreateItem(FourCC("woms"), 770.0, -340.0)
 end
 
 function CreateUnitsForPlayer0()
@@ -34,8 +43,19 @@ function InitTrig_allocator()
     TriggerAddAction(gg_trg_allocator, Trig_allocator_Actions)
 end
 
+function Trig_test2_Actions()
+        EnumItemsInRect(bj_mapInitialPlayableArea, function() return true end, function() print(GetItemName(GetEnumItem())) end)
+end
+
+function InitTrig_test2()
+    gg_trg_test2 = CreateTrigger()
+    TriggerRegisterTimerEventSingle(gg_trg_test2, 0.00)
+    TriggerAddAction(gg_trg_test2, Trig_test2_Actions)
+end
+
 function InitCustomTriggers()
     InitTrig_allocator()
+    InitTrig_test2()
 end
 
 function InitCustomPlayerSlots()
@@ -57,6 +77,7 @@ function main()
     SetAmbientDaySound("LordaeronSummerDay")
     SetAmbientNightSound("LordaeronSummerNight")
     SetMapMusic("Music", true, 0)
+    CreateAllItems()
     CreateAllUnits()
     InitBlizzard()
     InitGlobals()

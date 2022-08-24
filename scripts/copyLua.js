@@ -8,6 +8,7 @@ const fs = require("fs")
 const { BuildParser, BuildFileNotFound } = require("./buildParser")
 const { ModuleInformant, TsconfigFileNotFound } = require("./moduleInformant")
 const { execSync } = require("child_process")
+const LuaPreprocessor = require("./luaPreprocessor")
 
 const logJson = (name, obj) => {
     fs.writeFileSync(name, JSON.stringify(obj), "utf-8")
@@ -142,7 +143,6 @@ class CopyLua {
     }
 
     getRequireCalls(luaFileContent) {
-        
         const calls = luaFileContent.match(/require\s*\(?\s*[\"\'][\w\.-]*[\"\']\s*\)?/gm)
         return calls || []
     }
@@ -180,35 +180,42 @@ class CopyLua {
         return `require("${requirePath}")`
     }
 
-    correctRequirePaths(luaScripts) {
+    correctRequirePaths(luaContent) {
+        const content = luaContent
+        const requireCalls = this.getRequireCalls(content)
+        if (requireCalls.length === 0) {
+            return content
+        }
+        const luaPreprocessor = new LuaPreprocessor(content)
+        const stringLiterals = [
+            ...luaPreprocessor.getNonRequireStringLiterals(),
+            ...luaPreprocessor.getMultiLineNonRequireStringLiterals()
+        ]
+        const result = luaPreprocessor.replaceEntries(
+            () => requireCalls,
+            (entry, newContent, pos, pos0) => {
+                if (luaPreprocessor.inMatch(entry, stringLiterals, newContent, pos, pos0)) {
+                    return entry
+                }
+                const requirePath = this.getRequirePath(entry)
+                const newRequirePath = this.getNewRequirePathSimple(requirePath)
+                const newRequireCall = this.getNewRequireCall(newRequirePath)
+                return newRequireCall
+            }
+        )
+        const newContent = result.content
+        return newContent
+    }
+
+    scriptsHandling(luaScripts) {
         const luaFiles = luaScripts.map(path => Path.resolve(path))
         // console.log("luaFiles", luaFiles)
         // console.log()
         for (const luaFile of luaFiles) {
             // console.log("file", luaFile)
             let content = fs.readFileSync(luaFile, "utf-8")
-            const requireCalls = this.getRequireCalls(content)
-            // console.log("oldRequireCalls", requireCalls)
-            if (requireCalls.length === 0) {
-                continue
-            }
-            let pos0 = 0
-            for (const requireCall of requireCalls) {
-                // console.log("oldRequireCall", requireCall)
-                const pos = content.indexOf(requireCall, pos0)
-                const requirePath = this.getRequirePath(requireCall)
-                // const newRequirePath = this.getNewRequirePath(requirePath, luaFiles)
-                const newRequirePath = this.getNewRequirePathSimple(requirePath)
-                const newRequireCall = this.getNewRequireCall(newRequirePath)
-                // console.log("oldRequirePath", requirePath)
-                // console.log("newRequirePath", newRequirePath)
-                // console.log("newRequireCall", newRequireCall)
-                const oldPos = pos + requireCall.length
-                content = content.substring(0, pos) + newRequireCall + content.substring(oldPos)
-                const newPos = pos + newRequireCall.length
-                pos0 = newPos
-            }
-            fs.writeFileSync(luaFile, content, "utf-8")
+
+            fs.writeFileSync(luaFile, newContent, "utf-8")
             // console.log("CONTENT")
             // console.log(content)
             // console.log()
@@ -327,11 +334,11 @@ class CopyLua {
         console.log("Копирование lua скриптов")
         // console.log(this.moduleInformant.modulesList)
         // console.log(luaOutDirs)
-        await copyfiles([...inputFiles, this.moduleInformant.outDir])
-        for (const [_, luaFiles] of Object.entries(luaFilesCopied)) {
-            this.correctRequirePaths(luaFiles)
-        }
-        await this.moveCopiedFiles(luaScripts, luaOutDirs, rootDirs)
+        // await copyfiles([...inputFiles, this.moduleInformant.outDir])
+        // for (const [_, luaFiles] of Object.entries(luaFilesCopied)) {
+        //     this.scriptsHandling(luaFiles)
+        // }
+        // await this.moveCopiedFiles(luaScripts, luaOutDirs, rootDirs)
 
         // console.log(Object.keys(luaScripts))
         // console.log(Object.keys(luaFilesCopied))
@@ -339,7 +346,7 @@ class CopyLua {
         // console.log(Object.keys(luaScripts) === Object.keys(luaFilesCopied))
         // console.log(luaScripts)
         // logJson("scripts/log.json", luaScripts)
-        // console.log(luaFilesCopied)
+        console.log(luaFilesCopied)
         // const end = new Date().getTime()
         // console.log(`${end - start}ms`)
     }

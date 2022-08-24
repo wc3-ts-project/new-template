@@ -1,0 +1,9 @@
+{
+    "Timer": {
+        "constructor": "CreateTimer",
+        "start": {
+            "name": "TimerStart",
+            "pos": 1
+        }
+    }
+}
